@@ -10,7 +10,9 @@ const MainRouter = () => {
             {/*Login y Registro*/}
             <Route path="/auth/*" element={<AuthRoutes />} />
             {/* App Habitaciones y reservas */}
-            <Route path="/*" element={<AppRoutes />} />
+            <Route path="/app/*" element={<AppRoutes />} />
+            {/* validacion */}
+            <Route path="/*" element={<AuthRoutes />} />
         </Routes>
     )
 }

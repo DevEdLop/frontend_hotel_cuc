@@ -1,17 +1,19 @@
 import React from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { Reservas } from '../reservas'
-import { Habitaciones } from '../habitaciones'
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { Reservas, Habitaciones } from '../pages/';
+import { Navbar } from '../../components';
 
 export const AppRoutes = () => {
     return (
-        <Routes>
-            <Route index path='/' element={<Habitaciones />} />
-            <Route path='/' element={<Reservas />} />
+        <>
+            <Navbar />
+            <Routes>
+                <Route path='/habitaciones' element={<Habitaciones />} />
+                <Route path='/reservas' element={<Reservas />} />
 
-            <Route path='/*' element={<Navigate to="/" />} />
+                <Route path='/*' element={<Navigate to="/app/habitaciones" />} />
+            </Routes>
+        </>
 
-
-        </Routes>
     )
 }
