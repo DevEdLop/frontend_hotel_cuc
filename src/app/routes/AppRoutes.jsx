@@ -11,7 +11,7 @@ export const AppRoutes = () => {
                 <Route path='/habitaciones' element={<Habitaciones />} />
                 <Route path='/reservas' element={<Reservas />} />
 
-                <Route path='/*' element={<Navigate to="/app/habitaciones" />} />
+                <Route path='/*' element={<Navigate to="/habitaciones" />} />
             </Routes>
         </>
 

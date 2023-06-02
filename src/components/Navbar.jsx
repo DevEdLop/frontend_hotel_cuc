@@ -8,10 +8,15 @@ import {
     IconButton,
 } from "@mui/material";
 import { Hotel, ExitToApp } from "@mui/icons-material";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/auth";
 
 export const Navbar = () => {
+
+    const dispatch = useDispatch()
     const handleLogout = () => {
-        // Lógica para cerrar sesión
+        dispatch(logout())
+        console.log('logout completed')
     };
 
     return (
@@ -23,7 +28,7 @@ export const Navbar = () => {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     Sistema de Hotel
                 </Typography>
-                <Button color="inherit" startIcon={<ExitToApp />} onClick={handleLogout}>
+                <Button color="error" startIcon={<ExitToApp fontSize="large" />} onClick={handleLogout}>
                 </Button>
             </Toolbar>
         </AppBar>

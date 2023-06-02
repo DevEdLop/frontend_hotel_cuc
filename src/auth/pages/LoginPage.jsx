@@ -3,23 +3,37 @@ import { LoginOutlined } from "@mui/icons-material"
 import { Button, Grid, Link, TextField } from "@mui/material"
 import { AuthLayout } from '../layout/AuthLayout'
 import { useForm } from '../../hooks/useForm'
-import { useDispatch } from 'react-redux'
-import { checkingAuthentication } from '../../store/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { startLoginWithEmailPassword } from '../../store/auth'
+import { useMemo, useState } from 'react'
 
+const initialForm = {
+    email: '',
+    password: '',
+}
+
+const formValid = {
+    email: [(value) => value.includes('@'), 'El correo debe tener un @'],
+    password: [(value) => value.length >= 5, 'La contraseña debe tener mas de 6 caracteres']
+}
 export const LoginPage = () => {
 
-
     const dispatch = useDispatch()
-    const { email, password, onInputChange, formState } = useForm({
-        email: '',
-        password: '',
-    })
 
+    const { status } = useSelector(state => state.auth)
+    const [formSubmitted, setFormSubmitted] = useState(false)
+
+
+    const { email, password, onInputChange, formState,
+        isFormValid, emailValid, passwordValid } = useForm(initialForm, formValid)
+    const isAuthenticated = useMemo(() => status === 'checking', [status])
 
     const onSubmit = (e) => {
         e.preventDefault()
-        console.log(formState)
-        dispatch(checkingAuthentication())
+        // console.log(formState)
+        setFormSubmitted(true)
+        if (!isFormValid) return
+        dispatch(startLoginWithEmailPassword(formState))
     }
 
     return (
@@ -35,6 +49,8 @@ export const LoginPage = () => {
                             value={email}
                             name='email'
                             onChange={onInputChange}
+                            error={!!emailValid && formSubmitted}
+                            helperText={emailValid}
                             fullWidth
                         >
                         </TextField>
@@ -48,6 +64,8 @@ export const LoginPage = () => {
                             value={password}
                             name='password'
                             onChange={onInputChange}
+                            error={!!passwordValid && formSubmitted}
+                            helperText={passwordValid}
                             fullWidth
 
                         >
@@ -61,11 +79,16 @@ export const LoginPage = () => {
                         sx={{ mb: 2, mt: 1 }}
                     >
                         <Grid item xs={12} >
-                            <Button variant="contained"
+                            <Button
+                                disabled={isAuthenticated}
+                                variant="contained"
                                 type='submit'
+                                startIcon={
+                                    <LoginOutlined
+                                        fontSize="small"
+                                    />
+                                }
                                 fullWidth>
-                                <LoginOutlined fontSize="small" />
-                                &nbsp;
                                 Login
                             </Button>
                         </Grid>
