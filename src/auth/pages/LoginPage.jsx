@@ -1,6 +1,6 @@
 import { Link as Register } from 'react-router-dom'
 import { LoginOutlined } from "@mui/icons-material"
-import { Button, Grid, Link, TextField } from "@mui/material"
+import { Alert, Button, Grid, Link, TextField } from "@mui/material"
 import { AuthLayout } from '../layout/AuthLayout'
 import { useForm } from '../../hooks/useForm'
 import { useDispatch, useSelector } from 'react-redux'
@@ -20,7 +20,7 @@ export const LoginPage = () => {
 
     const dispatch = useDispatch()
 
-    const { status } = useSelector(state => state.auth)
+    const { status, errorMessage } = useSelector(state => state.auth)
     const [formSubmitted, setFormSubmitted] = useState(false)
 
 
@@ -71,7 +71,14 @@ export const LoginPage = () => {
                         >
                         </TextField>
                     </Grid>
-
+                    {
+                            errorMessage &&
+                            <Grid item xs={12} >
+                                <Alert severity='error'>
+                                    {errorMessage}
+                                </Alert>
+                            </Grid>
+                        }
                     <Grid
                         container
                         spacing={2}

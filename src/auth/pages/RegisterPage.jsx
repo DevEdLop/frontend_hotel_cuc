@@ -5,7 +5,7 @@ import { AppRegistration } from "@mui/icons-material"
 import { useForm } from '../../hooks/useForm'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { registerWithEmailPassword } from '../../providers/rooms'
+import { registerWithEmailPassword } from '../../providers/auth'
 
 
 //variant para cambiar el componente y component para cambiar la referencia en html

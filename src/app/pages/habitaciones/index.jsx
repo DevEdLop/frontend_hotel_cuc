@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
     Button,
     Dialog,
@@ -18,58 +18,67 @@ import {
 } from "@mui/material";
 import { Add, Edit, Delete } from "@mui/icons-material";
 import { AppLayout } from "../../layout/AppLayout";
-import { hotelApi } from "../../../api";
-
-const initialRoom = {
-    room_number: "",
-    room_type: "",
-    room_value: ""
-};
+import { createRoomsHotel, deleteRoomHotel, editRoomHotel, getRoomsHotel } from "../../../providers/rooms";
+import { HotelContext } from "../../../context/HotelContex";
 
 export const Habitaciones = () => {
-    const [rooms, setRooms] = useState([]);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [editing, setEditing] = useState(false);
-    const [currentRoom, setCurrentRoom] = useState(initialRoom);
+    const {
+        // State
+        rooms,
+        dialogOpen,
+        editing,
+        currentRoom,
+        //Set
+        setDialogOpen,
+        setEditing,
+        setCurrentRoom,
+        getRooms } = useContext(HotelContext);
 
     const openDialog = (editing, room) => {
         setEditing(editing);
-        setCurrentRoom(room || initialRoom);
+        setCurrentRoom(room);
         setDialogOpen(true);
     };
 
     const closeDialog = () => {
         setDialogOpen(false);
-        setCurrentRoom(initialRoom);
     };
 
+
     const saveRoom = async () => {
+
         if (editing) {
             // Actualizar habitación existente
-            const updatedRooms = rooms.map((room) =>
-                room.id === currentRoom.id ? currentRoom : room
-            );
-            setRooms(updatedRooms);
+            const updatedRooms = rooms.find((room) => room.id === currentRoom.id);
+            const roomId = updatedRooms.id
+            const newRoom = {
+                ...updatedRooms,
+                room_number: currentRoom.room_number,
+                room_type: currentRoom.room_type,
+                room_value: currentRoom.room_value
+            }
+            const resp = await editRoomHotel(roomId, newRoom)
+            closeDialog()
+            if (resp.ok) return getRooms()
         } else {
-            const token = "eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY4NTY1MDkzMCwiZXhwIjoxNjg1NjU0NTMwLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdCIsInN1YiI6ImVsb3BlejQ1QGN1Yy5lZHUuY28ifQ.AfHh4iCvujcFbTw8WdUWW2fZzg0Zq1u-G7kFGoJ475Su9mTHyrqdgPP7trfo761whZAZ88D_USPcd1C4FRZqKmJMAY4_BMoBdQDBOWfwujYWzioDBCH_ItN784vfIrZ_XxpmOxulMQzw4wOqh4wlwb40Mz5yuK10jPEHUCzAS-1jefa4"
             // Agregar nueva habitación
-            const newRoom = await hotelApi.post('/rooms', currentRoom, {
-               headers: {
-                Authorization: `Bearer ${token}`
-               }
-            });
-            console.log(newRoom)
-            // if (newRoom.value <= 0) return
-
-            // setRooms([...rooms, newRoom]);
+            const newRoom = await createRoomsHotel(currentRoom)
+            closeDialog()
+            if (newRoom.ok) return getRooms()
         }
         closeDialog();
     };
 
-    const deleteRoom = (room) => {
-        const updatedRooms = rooms.filter((r) => r.id !== room.id);
-        setRooms(updatedRooms);
+    const deleteRoom = async (room) => {
+        const { id } = rooms.find((r) => r.id === room.id);
+        const resp = await deleteRoomHotel(id)
+        closeDialog()
+        if (resp.ok) return getRooms()
     };
+
+    useEffect(() => {
+        getRooms()
+    }, [])
 
     return (
         <AppLayout>
@@ -122,7 +131,7 @@ export const Habitaciones = () => {
                     <DialogContentText>Ingrese los detalles de la habitación:</DialogContentText>
                     <TextField
                         label="Número"
-                        value={currentRoom.room_number}
+                        value={currentRoom?.room_number}
                         onChange={(e) =>
                             setCurrentRoom({ ...currentRoom, room_number: e.target.value })
                         }
@@ -131,7 +140,7 @@ export const Habitaciones = () => {
                     />
                     <TextField
                         label="Tipo"
-                        value={currentRoom.room_type}
+                        value={currentRoom?.room_type}
                         onChange={(e) =>
                             setCurrentRoom({ ...currentRoom, room_type: e.target.value })
                         }
@@ -142,7 +151,7 @@ export const Habitaciones = () => {
                     <TextField
                         // error
                         label="Valor"
-                        value={currentRoom.room_value}
+                        value={currentRoom?.room_value}
                         type="number"
                         onChange={(e) =>
                             setCurrentRoom({ ...currentRoom, room_value: e.target.value })

@@ -2,37 +2,39 @@ import { hotelApi } from "../../api";
 
 const token = localStorage.getItem('token') || '';
 
-export const getRoomsHotel = async () => {
+
+export const getBookings = async () => {
     try {
         // console.log(token)
-        const { data } = await hotelApi.get('/rooms', {
+        const { data } = await hotelApi.get('/bookings', {
             headers: {
                 Authorization: token
             }
         })
 
+        // console.log(data?.data)
         return {
             ok: true,
-            rooms: data?.data
+            bookings: data?.data
         }
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return {
             ok: false,
             errorMessage: error.message
         }
     }
 }
-export const createRoomsHotel = async (body = {}) => {
+export const createBookingsByRoom = async (body) => {
     try {
         // console.log(token)
-        const { data } = await hotelApi.post('/rooms', body, {
+        const { data } = await hotelApi.post('/bookings', body, {
             headers: {
                 Authorization: token
             }
         })
 
-        console.log(data)
+        // console.log(data?.data)
         return {
             ok: true,
             message: data?.message
@@ -46,17 +48,17 @@ export const createRoomsHotel = async (body = {}) => {
     }
 }
 
-export const editRoomHotel = async (id, room) => {
-    console.log(id, room)
+export const editBookinsByRoom = async (id, body) => {
+    console.log(body)
     try {
         // console.log(token)
-        const { data } = await hotelApi.patch(`/rooms/${id}`, room, {
+        const { data } = await hotelApi.patch(`/bookings/${id}`, body, {
             headers: {
                 Authorization: token
             }
         })
 
-        // console.log(data)
+        console.log(data?.data)
         return {
             ok: true,
             message: data?.message
@@ -70,17 +72,16 @@ export const editRoomHotel = async (id, room) => {
     }
 }
 
-export const deleteRoomHotel = async (id) => {
-    // console.log(id, room)
+export const deleteBookingByRoom = async (id) => {
     try {
         // console.log(token)
-        const { data } = await hotelApi.delete(`/rooms/${id}`, {
+        const { data } = await hotelApi.delete(`/bookings/${id}`, {
             headers: {
                 Authorization: token
             }
         })
 
-        // console.log(data)
+        console.log(data?.data)
         return {
             ok: true,
             message: data?.message
